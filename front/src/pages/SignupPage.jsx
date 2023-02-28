@@ -1,11 +1,29 @@
 import { Box, Button, PasswordInput, Text, TextInput } from '@mantine/core'
+import { useState } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'
 
 const SignupPage = () => {
   // Add some states to control your inputs
+  const [username, setUsername] = useState('')
+  const [password, setPassword] = useState('')
+  const navigate = useNavigate()
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
     event.preventDefault()
-    // Send your signup information to your backend
+    try {
+      const response = await axios.post('http://localhost:5005/auth/signup', {
+        username,
+        password,
+      })
+      console.log(response.data)
+
+      if (response.status === 201) {
+        navigate('/login')
+      }
+    } catch (error) {
+      console.error(error)
+    }
   }
 
   return (
@@ -27,8 +45,10 @@ const SignupPage = () => {
         sx={{ display: 'flex', flexDirection: 'column', gap: '20px', marginTop: '2rem' }}
         onSubmit={handleSubmit}
       >
-        <TextInput label='Username' variant='filled' withAsterisk />
-        <PasswordInput label='Password' variant='filled' withAsterisk />
+        <TextInput label='Username' variant='filled' withAsterisk value={username}
+          onChange={event => setUsername(event.target.value)}/>
+        <PasswordInput label='Password' variant='filled' withAsteriskvalue={password}
+          onChange={event => setPassword(event.target.value)} />
         <Button
           type='submit'
           variant='filled'
